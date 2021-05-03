@@ -1,37 +1,79 @@
-from .blueprint import users_blueprint as user_route
-from flask import request, Response
 import json
 
-from syft.grid.messages.user_messages import (
-    CreateUserMessage,
-    DeleteUserMessage,
-    GetUserMessage,
-    GetUsersMessage,
-    UpdateUserMessage,
-    SearchUsersMessage,
-)
+from flask import Response, request
+from syft.grid.messages.user_messages import (CreateUserMessage,
+                                              DeleteUserMessage,
+                                              GetUserMessage, GetUsersMessage,
+                                              SearchUsersMessage,
+                                              UpdateUserMessage)
 
-from ..auth import error_handler, token_required, optional_token
-from ...core.task_handler import route_logic, task_handler
-from ...core.node import get_node
-from ...core.exceptions import MissingRequestKeyError
 from ...core.database.utils import model_to_json
+from ...core.exceptions import MissingRequestKeyError
+from ...core.node import get_node
+from ...core.task_handler import route_logic, task_handler
+from ..auth import error_handler, optional_token, token_required
+from .blueprint import users_blueprint as user_route
 
 
 @user_route.route("me", methods=["GET"])
 @token_required
 def me(current_user):
     user = model_to_json(current_user)
-    return Response(
-        json.dumps(user),
-        status=200,
-        mimetype="application/json",
-    )
+    return Response(json.dumps(user), status=200, mimetype="application/json")
 
 
 @user_route.route("", methods=["POST"])
 @optional_token
-def create_user(current_user):
+def create_user(current_user):  # noqa
+    """Create user.
+
+    First user created will be administrator by default.
+    ---
+    operationID: createUser
+    requestBody:
+        description: Add user
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                token:
+                  type: string
+    responses:
+        '200':
+          description: user response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: User created successfully!
+
+        '403':
+          description: forbidden error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+              example:
+                error: You can't create a new User using this email!
+
+    """
     # Get request body
     content = request.get_json()
     if not content:
@@ -44,9 +86,7 @@ def create_user(current_user):
     response = response_msg if isinstance(response_msg, dict) else response_msg.content
 
     return Response(
-        json.dumps(response),
-        status=status_code,
-        mimetype="application/json",
+        json.dumps(response), status=status_code, mimetype="application/json"
     )
 
 
@@ -84,9 +124,7 @@ def get_all_users_route(current_user):
     response = response_msg if isinstance(response_msg, dict) else response_msg.content
 
     return Response(
-        json.dumps(response),
-        status=status_code,
-        mimetype="application/json",
+        json.dumps(response), status=status_code, mimetype="application/json"
     )
 
 
@@ -104,9 +142,7 @@ def get_specific_user_route(current_user, user_id):
     response = response_msg if isinstance(response_msg, dict) else response_msg.content
 
     return Response(
-        json.dumps(response),
-        status=status_code,
-        mimetype="application/json",
+        json.dumps(response), status=status_code, mimetype="application/json"
     )
 
 
@@ -126,9 +162,7 @@ def change_user_email_route(current_user, user_id):
     response = response_msg if isinstance(response_msg, dict) else response_msg.content
 
     return Response(
-        json.dumps(response),
-        status=status_code,
-        mimetype="application/json",
+        json.dumps(response), status=status_code, mimetype="application/json"
     )
 
 
@@ -148,9 +182,7 @@ def change_user_role_route(current_user, user_id):
     response = response_msg if isinstance(response_msg, dict) else response_msg.content
 
     return Response(
-        json.dumps(response),
-        status=status_code,
-        mimetype="application/json",
+        json.dumps(response), status=status_code, mimetype="application/json"
     )
 
 
@@ -170,9 +202,7 @@ def change_user_password_role(current_user, user_id):
     response = response_msg if isinstance(response_msg, dict) else response_msg.content
 
     return Response(
-        json.dumps(response),
-        status=status_code,
-        mimetype="application/json",
+        json.dumps(response), status=status_code, mimetype="application/json"
     )
 
 
@@ -192,9 +222,7 @@ def change_user_groups_route(current_user, user_id):
     response = response_msg if isinstance(response_msg, dict) else response_msg.content
 
     return Response(
-        json.dumps(response),
-        status=status_code,
-        mimetype="application/json",
+        json.dumps(response), status=status_code, mimetype="application/json"
     )
 
 
@@ -211,9 +239,7 @@ def delete_user_role(current_user, user_id):
     response = response_msg if isinstance(response_msg, dict) else response_msg.content
 
     return Response(
-        json.dumps(response),
-        status=status_code,
-        mimetype="application/json",
+        json.dumps(response), status=status_code, mimetype="application/json"
     )
 
 
@@ -232,7 +258,5 @@ def search_users_route(current_user):
     response = response_msg if isinstance(response_msg, dict) else response_msg.content
 
     return Response(
-        json.dumps(response),
-        status=status_code,
-        mimetype="application/json",
+        json.dumps(response), status=status_code, mimetype="application/json"
     )

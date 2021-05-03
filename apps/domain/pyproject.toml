@@ -32,6 +32,7 @@ textwrap3 = "^0.9.2"
 requests-toolbelt = "0.9.1"
 scipy = "^1.6.1"
 tenseal = "^0.3.2"
+flasgger = "0.9.5"
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"

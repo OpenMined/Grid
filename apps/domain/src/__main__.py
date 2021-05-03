@@ -1,19 +1,18 @@
-"""
-Note:
+"""This file should be used only for development purposes.
 
-This file should be used only for development purposes.
 Use the Flask built-in web server isn't suitable for production.
 For production, we need to put it behind real web server able to communicate
 with Flask through a WSGI protocol.
 A common choice for that is Gunicorn.
 """
 
-from app import create_app
-from gevent import pywsgi
-from geventwebsocket.handler import WebSocketHandler
 import argparse
 import os
-import json
+
+from app import create_app
+from flasgger import Swagger
+from gevent import pywsgi
+from geventwebsocket.handler import WebSocketHandler
 
 parser = argparse.ArgumentParser(description="Run PyGrid application.")
 
@@ -50,9 +49,16 @@ parser.add_argument(
 parser.set_defaults(use_test_config=False)
 
 if __name__ == "__main__":
+
     args = parser.parse_args()
 
     app = create_app(args)
+
+    # flagger configuration
+    app.config["SWAGGER"] = {"title": "PyGrid Domain", "uiversion": 3}
+    app.config["SWAGGER"]["openapi"] = "3.0.2"
+    swagger = Swagger(app)  # go to <address>:<port>/apidocs/
+
     _address = "http://{}:{}".format(args.host, args.port)
 
     server = pywsgi.WSGIServer(
