@@ -16,7 +16,11 @@ class SleepyUntilConfigured(object):
     def __init__(self, app, app_wsgi):
         self.app = app
         self.wsgi = app_wsgi
-        self.allowed_route = {"/setup": ["POST"], "/metadata": ["GET"]}
+        self.allowed_route = {
+            "/metadata": ["GET"],
+            "/pysyft": ["POST"],
+            "/setup": ["POST"],
+        }
 
     @property
     def is_sleeping(self):
